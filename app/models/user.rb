@@ -1,5 +1,6 @@
 class User < ApplicationRecord
-  validates :email, :token, presence: true, uniqueness: true
+  validates :email, presence: true, uniqueness: true
+  validates :token, presence: true, uniqueness: true
   has_many: :emergency_contacts
 
   def initialize(params)
