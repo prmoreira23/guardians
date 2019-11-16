@@ -2,15 +2,15 @@ class NotificationController < ApplicationController
   URL = "https://graph.facebook.com/v5.0/me/messages?access_token=#{Rails.application.credentials.FB_TOKEN}"
 
   def message_received
-    body = request.body;
+    body = params
 
-    if body.object == 'page'
-      body.entry.each do |entry|
+    if body["object"] == 'page'
+      body["entry"].each do |entry|
         message = entry.messaging.first
 
         text = message.text
 
-        user = User.find_by(token: message)
+        user = User.find_by(token: message.sender.id)
 
         if user
           ec = EmergencyContact.find_by(psid: message.sender.id)
@@ -24,9 +24,9 @@ class NotificationController < ApplicationController
         else
           options = get_options(id, "Invalid Token! Try again.")
         end
-        HTTParty.post(URL, options)
+        response = HTTParty.post(URL, options)
       end
-      render json: 'EVENT_RECEIVED', status: :ok
+      render json: { teste: 'EVENT_RECEIVED', response: response }, status: :ok
     else
       head :not_found
     end

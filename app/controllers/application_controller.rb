@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :null_session
+  
   TOKEN = 'MYDUMBTOKEN'
 
   def verify_webhook
