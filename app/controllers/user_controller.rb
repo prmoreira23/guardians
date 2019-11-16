@@ -1,6 +1,11 @@
 class UserController < ApplicationController
   def create
-    User.find_or_create_by(user_params)
+    user = User.new(user_params)
+    if user.save
+      render json: user, status: :ok
+    else
+      head :unprocessable_entity
+    end
   end
 
   private

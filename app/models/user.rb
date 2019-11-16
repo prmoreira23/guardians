@@ -1,8 +1,10 @@
 class User < ApplicationRecord
-  attr_reader :token
+  validates :email, :token, presence: true, uniqueness: true
 
-  before_save :set_token
-  validates :email, presence: true, uniqueness: true
+  def initialize(params)
+    super(params)
+    set_token
+  end
 
   private
   def set_token
