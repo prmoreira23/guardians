@@ -40,8 +40,11 @@ class NotificationController < ApplicationController
     token = params[:token]
     user = User.find_by(token: token)
     if user
-      #notify emergency_contacts
       Rails.logger.info("SENDING NOTIFICATIONS TO YOUR EMERGENCY LIST. U##{user.id}");
+      user.emergency_contacts.each do |contact|
+        options = get_options(contact.psid, "#{user.email} might have been in a car crash. Check on him to see if everything is okay or if they need any support.")
+        response = HTTParty.post(URL, options.to_json)
+      end
       head :ok
     else
       head :not_found
