@@ -27,7 +27,7 @@ class NotificationController < ApplicationController
         else
           options = get_options(message["sender"]["id"], "Invalid Token! Try again.")
         end
-        response = HTTParty.post(URL, options)
+        response = HTTParty.post(URL, { :query => options, :headers => { "Content-Type" => "application/json" }})
       end
 
       render json: 'EVENT_RECEIVED', status: :ok
@@ -43,7 +43,7 @@ class NotificationController < ApplicationController
       Rails.logger.info("SENDING NOTIFICATIONS TO YOUR EMERGENCY LIST. U##{user.id}");
       user.emergency_contacts.each do |contact|
         options = get_options(contact.psid, "#{user.email} might have been in a car crash. Check on him to see if everything is okay or if they need any support.")
-        response = HTTParty.post(URL, options.to_json)
+        response = HTTParty.post(URL, { :query => options, :headers => { "Content-Type" => "application/json" }})
       end
       head :ok
     else
@@ -55,12 +55,12 @@ class NotificationController < ApplicationController
   private
   def get_options(id, message)
     {
-      "messaging_type": "RESPONSE",
-      "recipient": {
-        "id": id
+      :messaging_type => "RESPONSE",
+      :recipient => {
+        :id => id
       },
-      "message": {
-        "text": message
+      :message => {
+        :text => message
       }
     }
   end
