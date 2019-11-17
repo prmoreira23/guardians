@@ -27,7 +27,7 @@ class NotificationController < ApplicationController
         else
           options = get_options(message["sender"]["id"], "Invalid Token! Try again.")
         end
-        response = HTTParty.post(URL, options)
+        response = HTTParty.post(URL, options.to_json)
       end
 
       render json: 'EVENT_RECEIVED', status: :ok
@@ -52,8 +52,7 @@ class NotificationController < ApplicationController
   private
   def get_options(id, message)
     {
-      "messaging_type": "MESSAGE_TAG",
-      "tag": "COMMUNITY_ALERT",
+      "messaging_type": "RESPONSE",
       "recipient": {
         "id": id
       },
