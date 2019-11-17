@@ -38,7 +38,7 @@ class NotificationController < ApplicationController
     user = User.find_by(token: token)
     if user
       #notify emergency_contacts
-      Rails.logger.info("SENDING NOTIFICATIONS TO YOUR EMERGENCY LIST. U##{u.id}");
+      Rails.logger.info("SENDING NOTIFICATIONS TO YOUR EMERGENCY LIST. U##{user.id}");
       head :ok
     else
       head :not_found
