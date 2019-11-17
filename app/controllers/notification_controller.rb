@@ -27,7 +27,7 @@ class NotificationController < ApplicationController
         else
           options = get_options(message["sender"]["id"], "Invalid Token! Try again.")
         end
-        response = HTTParty.post(URL, options.to_json)
+        response = HTTParty.post(URL, options)
       end
 
       render json: 'EVENT_RECEIVED', status: :ok
