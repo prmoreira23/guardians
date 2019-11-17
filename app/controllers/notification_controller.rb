@@ -9,7 +9,7 @@ class NotificationController < ApplicationController
         message = entry["messaging"].first
 
         text = message["text"]
-        byebug
+        
         user = User.find_by(token: text)
         options = {}
 
