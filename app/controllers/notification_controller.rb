@@ -8,13 +8,15 @@ class NotificationController < ApplicationController
       body["entry"].each do |entry|
         message = entry["messaging"].first
 
-        text = message["text"]
+        text = message["message"]["text"]
 
         user = User.find_by(token: text)
+
         options = {}
 
         if user
           ec = EmergencyContact.find_by(psid: message["sender"]["id"])
+
           if ec
             options = get_options(message["sender"]["id"], "You're already listed as an emergency contact for #{user.email}")
           else
@@ -27,6 +29,7 @@ class NotificationController < ApplicationController
         end
         response = HTTParty.post(URL, options)
       end
+
       render json: 'EVENT_RECEIVED', status: :ok
     else
       head :not_found
