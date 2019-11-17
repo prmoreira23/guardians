@@ -2,31 +2,32 @@ class NotificationController < ApplicationController
   URL = "https://graph.facebook.com/v5.0/me/messages?access_token=#{Rails.application.credentials.FB_TOKEN}"
 
   def message_received
-    body = params
+    body = JSON.parse(request.raw_post)
 
     if body["object"] == 'page'
       body["entry"].each do |entry|
-        message = entry.messaging.first
+        message = entry["messaging"].first
 
-        text = message.text
-
-        user = User.find_by(token: message.sender.id)
+        text = message["text"]
+        byebug
+        user = User.find_by(token: text)
+        options = {}
 
         if user
-          ec = EmergencyContact.find_by(psid: message.sender.id)
+          ec = EmergencyContact.find_by(psid: message["sender"]["id"])
           if ec
-            options = get_options(message.sender.id, "You're already listed as an emergency contact for #{user.email}")
+            options = get_options(message["sender"]["id"], "You're already listed as an emergency contact for #{user.email}")
           else
-            EmergencyContact.create(psid: message.sender.id)
-            options = get_options(message.sender.id, "Success! You're now an emergency contact for #{user.email}")
+            EmergencyContact.create(psid: message["sender"]["id"], user: user)
+            options = get_options(message["sender"]["id"], "Success! You're now an emergency contact for #{user.email}")
           end
           Rails.logger.info("RECEIVED MESSAGE");
         else
-          options = get_options(id, "Invalid Token! Try again.")
+          options = get_options(message["sender"]["id"], "Invalid Token! Try again.")
         end
         response = HTTParty.post(URL, options)
       end
-      render json: { teste: 'EVENT_RECEIVED', response: response }, status: :ok
+      render json: 'EVENT_RECEIVED', status: :ok
     else
       head :not_found
     end
